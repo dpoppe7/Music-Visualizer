@@ -48,29 +48,52 @@ class GoldenCard {
 }
 
 
-//Ttodo: class dependency: Cards
-// Visualizer Class
-// class VisualizerApp {
-//     render() {
-//         if (this.audioManager.isLoaded) {
-//             const bassPulse = map(this.audioManager.bassEnergy, 0, 255, 0, 30);
-//             fill(255, 215, 0, bassPulse); // Golden glow
-//             noStroke();
-//             ellipse(width/2, height/2, width * 1.5, height * 1.5);
-//         }
-//     }
-// }
+// Visualizer Class: manages all cards and animation settings
+class VisualizerApp {
+    constructor() {
+        this.cards = []; // array of GoldenCard
+        this.settings = { cardCount: 20, animSpeed: 1.0 }; // adjustable parameters
+    }
 
-// Test: Card class - working
-let testCard;
+    // Initialize cards array with random positions
+    initialize() {
+        this.cards = [];
+        for (let i = 0; i < this.settings.cardCount; i++) {
+            this.cards.push(new GoldenCard(random(width), random(height)));
+        }
+    }
+
+    // Update all cards positions 
+    update() {
+        for (let card of this.cards) card.update();
+    }
+
+    // Draws all cards 
+    render() {
+        background(0);
+        for (let card of this.cards) card.render();
+    }
+    // render() {
+    //     if (this.audioManager.isLoaded) {
+    //         const bassPulse = map(this.audioManager.bassEnergy, 0, 255, 0, 30);
+    //         fill(255, 215, 0, bassPulse); // Golden glow
+    //         noStroke();
+    //         ellipse(width/2, height/2, width * 1.5, height * 1.5);
+    //     }
+    // }
+}
+
+// Test: Visualizer app class - working
+let app;
 
 function setup() {
     createCanvas(windowWidth, windowHeight); //size of screen
     background(0);
-    testCard = new GoldenCard(width/2, height/2)
+    app = new VisualizerApp();
+    app.initialize();
 }
 
 function draw() {
-    testCard.update();
-    testCard.render();
+    app.update();
+    app.render();
 }
