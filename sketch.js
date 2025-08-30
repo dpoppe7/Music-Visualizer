@@ -57,7 +57,7 @@ class GoldenCard {
         this.suit = random(['♠', '♥', '♦', '♣']); // random suit symbol
         this.baseSize = random(40, 80); // of card
         this.currentSize = this.baseSize;
-        this.suitColor = this.suit === '♥' || this.suit === '♦' ? color(220, 20, 60) : color(0); // red hear or black diamos
+        this.suitColor = this.suit === '♥' || this.suit === '♦' ? color(220, 20, 60) : color(0); // heart or diamond are red, otherwise black 
     }
 
     // function updates card position and angle
