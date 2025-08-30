@@ -5,6 +5,7 @@ class AudioManager{
         this.isLoaded = false;
         this.isPlaying = false;
         this.amp = new p5.Amplitude(); // analyze volume. 
+        // analyze must be called prior to getEnergy():
         this.fft = new p5.FFT(0.3, 512); // analysis algorithm that isolates individual audio frequencies within a waveform. Documentation: https://p5js.org/reference/p5.sound/p5.FFT/
     }
     
@@ -80,11 +81,13 @@ class GoldenCard {
 
     // function updates card position and angle
     // added: reacts to audio volume
-    update(audioLevel = 0) {
+    update(audioLevel = 0, bassEnergy = 0) {
         // Increase velocity slightly based on audio level
         this.pos.add(p5.Vector.mult(this.vel, 1 + audioLevel * 5));
         this.angle += 0.01 + audioLevel * 0.05; // rotate faster with volume
-        this.currentSize = this.baseSize * (1 + audioLevel * 1.5); // scale size with volume
+        // also assing bass-reactive scaling
+        const bassReaction = map(bassEnergy, 0, 255, 1, 2);
+        this.currentSize = this.baseSize * (1 + audioLevel * 1.5) * bassReaction; // scale size with volume
         this.wrapScreen();
     }
 
@@ -136,10 +139,11 @@ class VisualizerApp {
     // Update all cards positions 
     update() {
         const level = this.audioManager.getLevel(); // get audio amplitude
+        const bassEnergy = this.audioManager.getBassEnergy();
+        
         for (let card of this.cards) {
-            card.update(level);
+            card.update(level, bassEnergy);
         }
-        for (let card of this.cards) card.update();
     }
 
     // Draws all cards 
