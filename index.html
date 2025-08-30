@@ -10,13 +10,32 @@
 <body>
     <main>
         <!-- Audio Control Panel -->
-        <div class="control-panel audio-panel"></div>
-            <input type="file" id="audioUpload" accept="audio/*">
-            <button id="playPause">Play/Pause</button>
-            <br>
-            <label for="cardCountSlider">Number of Cards:</label>
-            <input type="range" id="cardCountSlider" min="5" max="50" value="20">
-            <span id="cardCountLabel">20</span>
+        <div class="control-panel audio-panel">
+            <div class="panel-header">
+                <span class="panel-title">🎵 Audio Controls</span>
+            </div>
+            <div class="control-group">
+                <input type="file" id="audioUpload" accept="audio/*" class="file-input">
+                <label for="audioUpload" class="upload-btn">
+                    <span>Choose Music</span>
+                </label>
+            </div>
+            <div class="control-group button-group">
+                <button id="playPause" class="control-btn primary">
+                    <span id="playIcon">▶️</span>
+                    <span id="playText">Play</span>
+                </button>
+                <button id="stop" class="control-btn secondary">
+                    <span>⏹️</span>
+                    <span>Stop</span>
+                </button>
+            </div>
+            <div class="control-group">
+                <label for="cardCountSlider">Number of Cards:</label>
+                <input type="range" id="cardCountSlider" min="5" max="50" value="20">
+                <span id="cardCountLabel">20</span>
+            </div>
+        </div>
 
         <!-- Audio Visualizer Panel -->
         <div class="control-panel visual-panel">

@@ -8,6 +8,12 @@ class AudioManager{
         // analyze must be called prior to getEnergy():
         this.fft = new p5.FFT(0.3, 512); // analysis algorithm that isolates individual audio frequencies within a waveform. Documentation: https://p5js.org/reference/p5.sound/p5.FFT/
     }
+
+    update() {
+        if (this.isLoaded && this.isPlaying) {
+            this.fft.analyze(); // must be called before getEnergy()
+        }
+    }
     
     loadAudio(file, callback) {
         if (this.audio) this.audio.stop();
@@ -27,9 +33,16 @@ class AudioManager{
         }
     }
 
+    pause() {
+        if (this.isLoaded && this.isPlaying) {
+            this.audio.pause(); 
+            this.isPlaying = false;
+        }
+    }
+
     // stop if audio playing
     stop() {
-        if (this.isLoaded && this.isPlaying) {
+        if (this.isLoaded) {
             this.audio.stop();
             this.isPlaying = false;
         }
@@ -37,28 +50,36 @@ class AudioManager{
 
     // toggle play/pause
     toggle() {
-        this.isPlaying ? this.stop() : this.play();
+        this.isPlaying ? this.pause() : this.play();
     }
 
     getLevel() {
-        return this.isLoaded && this.isPlaying ? this.amp.getLevel() : 0;
+        if (this.isLoaded && this.isPlaying) {
+            return this.amp.getLevel();
+        }
+        return 0;
     }
 
     // Returns the amount of energy (volume) at a specific frequency, or the average amount of energy between two frequencies. 
     // Accepts Number(s) corresponding to frequency (in Hz), or a "string" corresponding to predefined frequency ranges ("bass", "lowMid", "mid", "highMid", "treble")
     // Documentation: https://p5js.org/reference/p5.sound/p5.FFT/
+    
+
     getBassEnergy() {
         if (!this.isLoaded || !this.isPlaying) return 0;
+        this.fft.analyze(); // Ensure analysis is current
         return this.fft.getEnergy("bass");
     }
 
     getMidEnergy() {
         if (!this.isLoaded || !this.isPlaying) return 0;
+        this.fft.analyze();
         return this.fft.getEnergy("mid");
     }
 
     getTrebleEnergy() {
         if (!this.isLoaded || !this.isPlaying) return 0;
+        this.fft.analyze();
         return this.fft.getEnergy("treble");
     }
 }
@@ -138,6 +159,7 @@ class VisualizerApp {
 
     // Update all cards positions 
     update() {
+        this.audioManager.update();
         const level = this.audioManager.getLevel(); // get audio amplitude
         const bassEnergy = this.audioManager.getBassEnergy();
         
@@ -160,9 +182,23 @@ class VisualizerApp {
         this.initialize(); // re-initialize cards
     }
 
+    updatePlayButton() {
+        const playIcon = document.getElementById('playIcon');
+        const playText = document.getElementById('playText');
+        
+        if (this.audioManager.isPlaying) {
+            playIcon.textContent = '⏸️';
+            playText.textContent = 'Pause';
+        } else {
+            playIcon.textContent = '▶️';
+            playText.textContent = 'Play';
+        }
+    }
+
     setupEventListeners() {
         const fileInput = document.getElementById('audioUpload');
         const playBtn = document.getElementById('playPause');
+        const stopBtn = document.getElementById('stop');
         const cardSlider = document.getElementById('cardCountSlider');
         const cardLabel = document.getElementById('cardCountLabel');
         const bgColorInput = document.getElementById('bgColor');
@@ -175,7 +211,13 @@ class VisualizerApp {
 
         playBtn.addEventListener('click', () => {
             this.audioManager.toggle();
-            console.log('Audio playing:', this.audioManager.isPlaying);
+            this.updatePlayButton();
+            // console.log('Audio playing:', this.audioManager.isPlaying);
+        });
+
+        stopBtn.addEventListener('click', () => {
+            this.audioManager.stop();
+            this.updatePlayButton();
         });
 
         cardSlider.addEventListener('input', (e) => {
@@ -253,32 +295,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight); //size of screen
     audioManager = new AudioManager();
 
-    const fileInput = document.getElementById('audioUpload');
-    const playBtn = document.getElementById('playPause');
-    const cardSlider = document.getElementById('cardCountSlider');
-    const cardLabel = document.getElementById('cardCountLabel');
-    const bgColorInput = document.getElementById('bgColor');
-
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            audioManager.loadAudio(e.target.files[0]);
-        }
-    });
-
-    playBtn.addEventListener('click', () => {
-        audioManager.toggle();
-        console.log('Audio playing:', audioManager.isPlaying);
-    });
-
-    cardSlider.addEventListener('input', (e) => {
-        const val = parseInt(e.target.value);
-        cardLabel.textContent = val;
-        app.setCardCount(val);
-    });
-
-    bgColorInput.addEventListener('input', (e) => {
-        app.settings.bgColor = e.target.value;
-    });
+    
 
 
     // Initialize visualizer cards
