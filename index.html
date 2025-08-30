@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,25 +19,27 @@
             <span id="cardCountLabel">20</span>
 
         <!-- Audio Visualizer Panel -->
-        <div class="control-panel visual-panel"></div>
+        <div class="control-panel visual-panel">
+            <label for="bgColor">Background Color:</label>
+            <input type="color" id="bgColor" value="#000000">
+        </div>
 
         <!-- Audio Effects Panel -->
         <div class="control-panel effects-panel"></div>
 
-
         <!-- Drop zone for music file-->
         <div id="dropZone" class="drop-zone">
-        <div class="drop-content">
-            <div class="drop-icon">🎵</div>
-                <h3>Drop your music here</h3>
-                <p>or click to browse files</p>
-            <div class="supported-formats">MP3 • WAV • OGG</div>
-        </div>
+            <div class="drop-content">
+                <div class="drop-icon">🎵</div>
+                    <h3>Drop your music here</h3>
+                    <p>or click to browse files</p>
+                <div class="supported-formats">MP3 • WAV • OGG</div>
+            </div>
         </div>
 
         <!-- Loading indicator-->
         <div class="loading-indicator" id="loadingIndicator">
-        <div class="spinner"></div>
+            <div class="spinner"></div>
             <span>Loading...</span>
         </div>
 

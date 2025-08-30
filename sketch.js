@@ -37,7 +37,6 @@ class AudioManager{
         this.isPlaying ? this.stop() : this.play();
     }
 
-    // get current audio level (0-1)
     getLevel() {
         return this.isLoaded && this.isPlaying ? this.amp.getLevel() : 0;
     }
@@ -123,8 +122,10 @@ class VisualizerApp {
 
     // Draws all cards 
     render() {
-        background(0);
-        for (let card of this.cards) card.render();
+        background(this.settings.bgColor);
+        for (let card of this.cards) {
+            card.render();
+        }
     }
 
     // dynamically update card count
@@ -162,6 +163,21 @@ class VisualizerApp {
         });
     }
 
+    loadAudioFile(file) {
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        loadingIndicator.classList.add('visible');
+
+        this.audioManager.loadAudio(file, () => {
+            loadingIndicator.classList.remove('visible');
+            console.log('Audio loaded successfully');
+            this.hideDropZone();
+        });
+    }
+
+    hideDropZone() {
+        document.getElementById('dropZone').classList.add('hidden');
+    }
+
     // render() {
     //     if (this.audioManager.isLoaded) {
     //         const bassPulse = map(this.audioManager.bassEnergy, 0, 255, 0, 30);
@@ -184,6 +200,7 @@ function setup() {
     const playBtn = document.getElementById('playPause');
     const cardSlider = document.getElementById('cardCountSlider');
     const cardLabel = document.getElementById('cardCountLabel');
+    const bgColorInput = document.getElementById('bgColor');
 
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
@@ -201,6 +218,12 @@ function setup() {
         cardLabel.textContent = val;
         app.setCardCount(val);
     });
+
+    bgColorInput.addEventListener('input', (e) => {
+        app.settings.bgColor = e.target.value;
+    });
+
+    
 
     // Initialize visualizer cards
     app = new VisualizerApp(audioManager);
