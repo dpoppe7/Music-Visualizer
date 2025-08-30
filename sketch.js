@@ -192,16 +192,80 @@ class GoldenCard {
     }
 }
 
+// particle system
+class SmokeParticle {
+    constructor() {
+        this.reset();
+        this.age = random(this.lifetime * 0.5);
+    }
+    
+    reset() {
+        this.pos = createVector(random(width), height + 50);
+        this.vel = createVector(random(-0.5, 0.5), random(-2, -0.5));
+        this.size = random(30, 80);
+        this.maxSize = this.size * random(1.5, 2.5);
+        this.lifetime = random(200, 400);
+        this.age = 0;
+        this.noiseOffset = random(1000);
+    }
+    
+    update(audioManager) {
+        // Organic movement with noise
+        const noiseForce = createVector(
+            noise(this.pos.x * 0.01, millis() * 0.0005 + this.noiseOffset) - 0.5,
+            noise(this.pos.y * 0.01, millis() * 0.0005 + this.noiseOffset + 1000) - 0.5
+        );
+        
+        noiseForce.mult(0.2);
+        this.vel.add(noiseForce);
+        this.vel.mult(0.99);
+        
+        this.pos.add(this.vel);
+        this.age++;
+        
+        // Size evolution
+        this.size = lerp(this.size, this.maxSize, 0.01);
+        
+        // Reset if too old
+        if (this.age > this.lifetime) {
+            this.reset();
+        }
+    }
+    
+    render() {
+        push();
+        translate(this.pos.x, this.pos.y);
+        
+        const ageRatio = this.age / this.lifetime;
+        const alpha = map(ageRatio, 0, 1, 60, 0);
+        
+        fill(200, 220, 255, alpha);
+        noStroke();
+        ellipse(0, 0, this.size);
+        
+        pop();
+    }
+}
+
 
 // Visualizer Class: manages all cards and animation settings
 class VisualizerApp {
     constructor(audioMgr) {
         this.cards = [];
         this.audioManager = audioMgr; // link to audio manager
+        this.smokeParticles = []; // particles system
         this.settings = { 
             cardCount: 20,
             bgColor: '#000000' 
         };
+    }
+
+    // initialize smoke particle system
+    initializeSmoke() {
+        this.smokeParticles = [];
+        for (let i = 0; i < 30; i++) {
+            this.smokeParticles.push(new SmokeParticle());
+        }
     }
 
     // Initialize cards array with random positions
@@ -210,7 +274,9 @@ class VisualizerApp {
         for (let i = 0; i < this.settings.cardCount; i++) {
             this.cards.push(new GoldenCard(random(width), random(height)));
         }
+        this.initializeSmoke(); // particle system intializer call
     }
+
 
     // Update all cards positions 
     update() {
@@ -221,11 +287,23 @@ class VisualizerApp {
         for (let card of this.cards) {
             card.update(level, bassEnergy);
         }
+
+        // Updates smoke particles
+        for (let particle of this.smokeParticles) {
+            particle.update(this.audioManager);
+        }
     }
 
     // Draws all cards 
     render() {
         background(this.settings.bgColor);
+
+        // Renders smoke particles first (background)
+        for (let particle of this.smokeParticles) {
+            particle.render();
+        }
+
+        // Then renders cards on top
         for (let card of this.cards) {
             card.render(this.audioManager);
         }
