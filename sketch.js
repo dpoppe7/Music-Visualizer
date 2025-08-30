@@ -100,7 +100,10 @@ class VisualizerApp {
     constructor(audioMgr) {
         this.cards = [];
         this.audioManager = audioMgr; // link to audio manager
-        this.settings = { cardCount: 20 };
+        this.settings = { 
+            cardCount: 20,
+            bgColor: '#000000' 
+        };
     }
 
     // Initialize cards array with random positions
