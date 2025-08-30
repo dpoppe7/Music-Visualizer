@@ -18,3 +18,10 @@ button {
     color: black;
     font-weight: bold;
 }
+
+/* slider */
+input[type="range"] {
+    width: 20%;
+    margin-top: 8px;
+}
+

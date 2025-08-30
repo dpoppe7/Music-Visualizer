@@ -126,6 +126,12 @@ class VisualizerApp {
         background(0);
         for (let card of this.cards) card.render();
     }
+
+    // dynamically update card count
+    setCardCount(count) {
+        this.settings.cardCount = count;
+        this.initialize(); // re-initialize cards
+    }
     // render() {
     //     if (this.audioManager.isLoaded) {
     //         const bassPulse = map(this.audioManager.bassEnergy, 0, 255, 0, 30);
@@ -146,6 +152,8 @@ function setup() {
 
     const fileInput = document.getElementById('audioUpload');
     const playBtn = document.getElementById('playPause');
+    const cardSlider = document.getElementById('cardCountSlider');
+    const cardLabel = document.getElementById('cardCountLabel');
 
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
@@ -156,6 +164,12 @@ function setup() {
     playBtn.addEventListener('click', () => {
         audioManager.toggle();
         console.log('Audio playing:', audioManager.isPlaying);
+    });
+
+    cardSlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        cardLabel.textContent = val;
+        app.setCardCount(val);
     });
 
     // Initialize visualizer cards
