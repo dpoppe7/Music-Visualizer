@@ -128,11 +128,11 @@ class GoldenCard {
 
     // function updates card position and angle
     // added: reacts to audio volume
-    update(audioLevel = 0, bassEnergy = 0) {
+    update(audioLevel = 0, bassEnergy = 0, animSpeed = 1) {
         // Increase velocity slightly based on audio level
-        this.pos.add(p5.Vector.mult(this.vel, 1 + audioLevel * 5));
-        this.angle += 0.01 + audioLevel * 0.05; // rotate faster with volume
-        this.metalPhase += 0.03;
+        this.pos.add(p5.Vector.mult(this.vel, (1 + audioLevel * 5) * animSpeed));
+        this.angle += (0.01 + audioLevel * 0.05) * animSpeed; // rotate faster with volume
+        this.metalPhase += 0.03 * animSpeed;
 
         // also assing bass-reactive scaling
         const bassReaction = map(bassEnergy, 0, 255, 1, 2);
@@ -209,7 +209,7 @@ class SmokeParticle {
         this.noiseOffset = random(1000);
     }
     
-    update(audioManager) {
+    update(audioManager, animSpeed = 1) {
         // Organic movement with noise
         const noiseForce = createVector(
             noise(this.pos.x * 0.01, millis() * 0.0005 + this.noiseOffset) - 0.5,
@@ -220,8 +220,8 @@ class SmokeParticle {
         this.vel.add(noiseForce);
         this.vel.mult(0.99);
         
-        this.pos.add(this.vel);
-        this.age++;
+        this.pos.add(p5.Vector.mult(this.vel, animSpeed));
+        this.age += animSpeed;
         
         // Size evolution
         this.size = lerp(this.size, this.maxSize, 0.01);
@@ -256,7 +256,8 @@ class VisualizerApp {
         this.smokeParticles = []; // particles system
         this.settings = { 
             cardCount: 20,
-            bgColor: '#000000' 
+            bgColor: '#000000',
+            animSpeed: 1.0
         };
     }
 
@@ -285,12 +286,12 @@ class VisualizerApp {
         const bassEnergy = this.audioManager.getBassEnergy();
         
         for (let card of this.cards) {
-            card.update(level, bassEnergy);
+            card.update(level, bassEnergy, this.settings.animSpeed);
         }
 
         // Updates smoke particles
         for (let particle of this.smokeParticles) {
-            particle.update(this.audioManager);
+            particle.update(this.audioManager, this.settings.animSpeed);
         }
     }
 
@@ -329,12 +330,14 @@ class VisualizerApp {
     }
 
     setupEventListeners() {
-        const fileInput = document.getElementById('audioUpload');
-        const playBtn = document.getElementById('playPause');
-        const stopBtn = document.getElementById('stop');
-        const cardSlider = document.getElementById('cardCountSlider');
-        const cardLabel = document.getElementById('cardCountLabel');
-        const bgColorInput = document.getElementById('bgColor');
+        const fileInput = document.getElementById('audioUpload');   // file
+        const playBtn = document.getElementById('playPause');   // play
+        const stopBtn = document.getElementById('stop');    // stop
+        const cardSlider = document.getElementById('cardCountSlider');  // slider nume of cards
+        const cardLabel = document.getElementById('cardCountLabel');    
+        const bgColorInput = document.getElementById('bgColor');    // background color
+        const animSpeedSlider = document.getElementById('animSpeed');   // animation
+        const animSpeedValue = document.getElementById('animSpeedValue');
 
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
@@ -361,6 +364,12 @@ class VisualizerApp {
 
         bgColorInput.addEventListener('input', (e) => {
             this.settings.bgColor = e.target.value;
+        });
+
+        animSpeedSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            animSpeedValue.textContent = val.toFixed(1);
+            this.settings.animSpeed = val;
         });
 
         this.setupDropZone();
