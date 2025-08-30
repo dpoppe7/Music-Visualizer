@@ -132,6 +132,36 @@ class VisualizerApp {
         this.settings.cardCount = count;
         this.initialize(); // re-initialize cards
     }
+
+    // drag-and-drop event listeners for the drop zone
+    setupDropZone() {
+        const dropZone = document.getElementById('dropZone');
+
+        dropZone.addEventListener('click', () => {
+            document.getElementById('audioUpload').click();  // Clicking the drop zone opens the file browser
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over'); // Add hover styles effect - visual feedback for dragging
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over'); // Add hover styles effect - visual feedback for dragging
+        });
+
+        // Handlea the dropped file
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.includes('audio')) {
+            this.loadAudioFile(files[0]);
+            }
+        });
+    }
+
     // render() {
     //     if (this.audioManager.isLoaded) {
     //         const bassPulse = map(this.audioManager.bassEnergy, 0, 255, 0, 30);
