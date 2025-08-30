@@ -137,6 +137,37 @@ class VisualizerApp {
         this.initialize(); // re-initialize cards
     }
 
+    setupEventListeners() {
+        const fileInput = document.getElementById('audioUpload');
+        const playBtn = document.getElementById('playPause');
+        const cardSlider = document.getElementById('cardCountSlider');
+        const cardLabel = document.getElementById('cardCountLabel');
+        const bgColorInput = document.getElementById('bgColor');
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                this.loadAudioFile(e.target.files[0]);
+            }
+        });
+
+        playBtn.addEventListener('click', () => {
+            this.audioManager.toggle();
+            console.log('Audio playing:', this.audioManager.isPlaying);
+        });
+
+        cardSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            cardLabel.textContent = val;
+            this.setCardCount(val);
+        });
+
+        bgColorInput.addEventListener('input', (e) => {
+            this.settings.bgColor = e.target.value;
+        });
+
+        this.setupDropZone();
+    }
+
     // drag-and-drop event listeners for the drop zone
     setupDropZone() {
         const dropZone = document.getElementById('dropZone');
@@ -226,11 +257,11 @@ function setup() {
         app.settings.bgColor = e.target.value;
     });
 
-    
 
     // Initialize visualizer cards
     app = new VisualizerApp(audioManager);
     app.initialize();
+    app.setupEventListeners();
 }
 
 function draw() {
