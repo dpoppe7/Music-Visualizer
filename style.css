@@ -1,6 +1,20 @@
 .control-panel {
     position: fixed;
+    top: 20px;
+    left: 20px;
     background: rgba(28, 28, 30, 0.85);
-    border-radius: 12px;
     padding: 16px;
+    border-radius: 12px;
+    color: white;
+}
+
+button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: gold;
+    color: black;
+    font-weight: bold;
 }

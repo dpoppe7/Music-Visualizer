@@ -1,6 +1,6 @@
 // Audio manager class: audio control
-class AudioManage{
-    constructor(){
+class AudioManager{
+    constructor() {
         this.audio = null;
         this.isLoaded = false;
         this.isPlaying = false;
@@ -29,6 +29,11 @@ class AudioManage{
             this.audio.stop();
             this.isPlaying = false;
         }
+    }
+
+    // toggle play/pause
+    toggle() {
+        this.isPlaying ? this.stop() : this.play();
     }
 }
 
@@ -119,21 +124,33 @@ class VisualizerApp {
 
 // Test: Visualizer app class - working
 let app;
-app.audioManager = new AudioManager();
-document.getElementById('audioUpload').addEventListener('change', (e) => {
-  if (e.target.files.length > 0) {
-    app.audioManager.loadAudio(e.target.files[0]);
-  }
-});
+let audioManager;
 
 function setup() {
-    createCanvas(windowWidth, windowHeight); //size of screen
-    background(0);
-    app = new VisualizerApp();
-    app.initialize();
+    // createCanvas(windowWidth, windowHeight); //size of screen
+    // background(0);
+
+    audioManager = new AudioManager();
+
+    const fileInput = document.getElementById('audioUpload');
+    const playBtn = document.getElementById('playPause');
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            audioManager.loadAudio(e.target.files[0]);
+        }
+    });
+
+    playBtn.addEventListener('click', () => {
+        audioManager.toggle();
+        console.log('Audio playing:', audioManager.isPlaying);
+    });
+
+    // app = new VisualizerApp();
+    // app.initialize();
 }
 
 function draw() {
-    app.update();
-    app.render();
+    // app.update();
+    // app.render();
 }
