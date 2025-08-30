@@ -126,14 +126,45 @@ class GoldenCard {
         translate(this.pos.x, this.pos.y);
         rotate(this.angle);
         rectMode(CENTER);
-        fill(255, 215, 0); // golden card
+        
+        // Adds shadow to card
+        push();
+        translate(3, 3);
+        fill(0, 0, 0, 100);
+        noStroke();
         rect(0, 0, this.currentSize, this.currentSize * 1.4, 10);
+        pop();
+        
+        // Golden gradient effect
+        fill(255, 215, 0);
+        stroke(255, 223, 0);
+        strokeWeight(2);
+        rect(0, 0, this.currentSize, this.currentSize * 1.4, 10);
+        
+        // Inner border
+        fill(255, 235, 59);
+        noStroke();
+        rect(0, 0, this.currentSize * 0.9, this.currentSize * 1.4 * 0.9, 8);
 
+        // Suit symbol
         fill(this.suitColor);
         textAlign(CENTER, CENTER);
         textSize(this.currentSize * 0.4);
         text(this.suit, 0, 0);
+        
         pop();
+        // push();
+        // translate(this.pos.x, this.pos.y);
+        // rotate(this.angle);
+        // rectMode(CENTER);
+        // fill(255, 215, 0); // golden card
+        // rect(0, 0, this.currentSize, this.currentSize * 1.4, 10);
+
+        // fill(this.suitColor);
+        // textAlign(CENTER, CENTER);
+        // textSize(this.currentSize * 0.4);
+        // text(this.suit, 0, 0);
+        // pop();
     }
 }
 
