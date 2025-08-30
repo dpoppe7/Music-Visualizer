@@ -4,6 +4,7 @@ class AudioManager{
         this.audio = null;
         this.isLoaded = false;
         this.isPlaying = false;
+        this.amp = new p5.Amplitude(); // analyze volume
     }
     
     loadAudio(file, callback) {
@@ -35,6 +36,11 @@ class AudioManager{
     toggle() {
         this.isPlaying ? this.stop() : this.play();
     }
+
+    // get current audio level (0-1)
+    getLevel() {
+        return this.isLoaded && this.isPlaying ? this.amp.getLevel() : 0;
+    }
 }
 
 //Visual elements for the visualizer: Cards (playing cards like poker :D)
@@ -55,9 +61,12 @@ class GoldenCard {
     }
 
     // function updates card position and angle
-    update() {
-        this.pos.add(this.vel);
-        this.angle += 0.01;
+    // added: reacts to audio volume
+    update(audioLevel = 0) {
+        // Increase velocity slightly based on audio level
+        this.pos.add(p5.Vector.mult(this.vel, 1 + audioLevel * 5));
+        this.angle += 0.01 + audioLevel * 0.05; // rotate faster with volume
+        this.currentSize = this.baseSize * (1 + audioLevel * 1.5); // scale size with volume
         this.wrapScreen();
     }
 
@@ -89,9 +98,10 @@ class GoldenCard {
 
 // Visualizer Class: manages all cards and animation settings
 class VisualizerApp {
-    constructor() {
-        this.cards = []; // array of GoldenCard
-        this.settings = { cardCount: 20, animSpeed: 1.0 }; // adjustable parameters
+    constructor(audioMgr) {
+        this.cards = [];
+        this.audioManager = audioMgr; // link to audio manager
+        this.settings = { cardCount: 20 };
     }
 
     // Initialize cards array with random positions
@@ -104,6 +114,10 @@ class VisualizerApp {
 
     // Update all cards positions 
     update() {
+        const level = this.audioManager.getLevel(); // get audio amplitude
+        for (let card of this.cards) {
+            card.update(level);
+        }
         for (let card of this.cards) card.update();
     }
 
@@ -127,9 +141,7 @@ let app;
 let audioManager;
 
 function setup() {
-    // createCanvas(windowWidth, windowHeight); //size of screen
-    // background(0);
-
+    createCanvas(windowWidth, windowHeight); //size of screen
     audioManager = new AudioManager();
 
     const fileInput = document.getElementById('audioUpload');
@@ -146,11 +158,12 @@ function setup() {
         console.log('Audio playing:', audioManager.isPlaying);
     });
 
-    // app = new VisualizerApp();
-    // app.initialize();
+    // Initialize visualizer cards
+    app = new VisualizerApp(audioManager);
+    app.initialize();
 }
 
 function draw() {
-    // app.update();
-    // app.render();
+    app.update();
+    app.render();
 }
