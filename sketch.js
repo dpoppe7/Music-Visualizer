@@ -98,6 +98,32 @@ class GoldenCard {
         this.baseSize = random(40, 80); // of card
         this.currentSize = this.baseSize;
         this.suitColor = this.suit === '♥' || this.suit === '♦' ? color(220, 20, 60) : color(0); // heart or diamond are red, otherwise black 
+
+        // properties, metallic wave texture
+        this.metalPhase = random(TWO_PI);
+        this.reflectionIntensity = random(0.3, 0.8);
+    }
+
+    // metallic texture
+    renderWaveTexture(w, h, trebleEnergy) {
+        stroke(200, 200, 255, 150);
+        strokeWeight(1);
+
+        const waveCount = 8; // adjustable
+        const waveAmplitude = map(trebleEnergy, 0, 255, 5, 20);
+
+        for (let i = 0; i < waveCount; i++) {
+            const y = map(i, 0, waveCount - 1, -h/2 + 10, h/2 - 10);
+            const phase = this.metalPhase + i * 0.5;
+
+            beginShape();
+            noFill();
+            for (let x = -w/2 + 10; x <= w/2 - 10; x += 5) {
+                const waveY = y + sin(phase + x * 0.02) * waveAmplitude * this.reflectionIntensity;
+                vertex(x, waveY);
+            }
+            endShape();
+        }
     }
 
     // function updates card position and angle
@@ -106,6 +132,8 @@ class GoldenCard {
         // Increase velocity slightly based on audio level
         this.pos.add(p5.Vector.mult(this.vel, 1 + audioLevel * 5));
         this.angle += 0.01 + audioLevel * 0.05; // rotate faster with volume
+        this.metalPhase += 0.03;
+
         // also assing bass-reactive scaling
         const bassReaction = map(bassEnergy, 0, 255, 1, 2);
         this.currentSize = this.baseSize * (1 + audioLevel * 1.5) * bassReaction; // scale size with volume
@@ -121,50 +149,46 @@ class GoldenCard {
         if (this.pos.y > height + margin) this.pos.y = -margin;
     }
 
-    render() {
+    render(audioManager) {
         push();
         translate(this.pos.x, this.pos.y);
         rotate(this.angle);
-        rectMode(CENTER);
+
+        const w = this.currentSize;
+        const h = w * 1.4;
         
-        // Adds shadow to card
+        // Shadow
         push();
         translate(3, 3);
         fill(0, 0, 0, 100);
         noStroke();
-        rect(0, 0, this.currentSize, this.currentSize * 1.4, 10);
+        rect(-w/2, -h/2, w, h, 10);
         pop();
         
-        // Golden gradient effect
+        // Main card body
         fill(255, 215, 0);
         stroke(255, 223, 0);
         strokeWeight(2);
-        rect(0, 0, this.currentSize, this.currentSize * 1.4, 10);
+        rect(-w/2, -h/2, w, h, 10);
         
         // Inner border
         fill(255, 235, 59);
         noStroke();
-        rect(0, 0, this.currentSize * 0.9, this.currentSize * 1.4 * 0.9, 8);
-
+        const innerW = w * 0.9;
+        const innerH = h * 0.9;
+        rect(-innerW/2, -innerH/2, innerW, innerH, 8);
+        
+        // Add metallic texture
+        const trebleEnergy = audioManager ? audioManager.getTrebleEnergy() : 0;
+        this.renderWaveTexture(w, h, trebleEnergy);
+        
         // Suit symbol
         fill(this.suitColor);
         textAlign(CENTER, CENTER);
-        textSize(this.currentSize * 0.4);
+        textSize(w * 0.4);
         text(this.suit, 0, 0);
         
         pop();
-        // push();
-        // translate(this.pos.x, this.pos.y);
-        // rotate(this.angle);
-        // rectMode(CENTER);
-        // fill(255, 215, 0); // golden card
-        // rect(0, 0, this.currentSize, this.currentSize * 1.4, 10);
-
-        // fill(this.suitColor);
-        // textAlign(CENTER, CENTER);
-        // textSize(this.currentSize * 0.4);
-        // text(this.suit, 0, 0);
-        // pop();
     }
 }
 
@@ -203,7 +227,7 @@ class VisualizerApp {
     render() {
         background(this.settings.bgColor);
         for (let card of this.cards) {
-            card.render();
+            card.render(this.audioManager);
         }
     }
 
