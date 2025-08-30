@@ -1,3 +1,37 @@
+// Audio manager class: audio control
+class AudioManage{
+    constructor(){
+        this.audio = null;
+        this.isLoaded = false;
+        this.isPlaying = false;
+    }
+    
+    loadAudio(file, callback) {
+        if (this.audio) this.audio.stop();
+            this.audio = loadSound(file, () => {
+                this.isLoaded = true;
+                console.log('Audio loaded');
+                callback && callback();
+        });
+    }
+
+    // play if loaded
+    play() {
+        if (this.isLoaded && !this.isPlaying) {
+            this.audio.play();
+            this.isPlaying = true;
+        }
+    }
+
+    // stop if audio playing
+    stop() {
+        if (this.isLoaded && this.isPlaying) {
+            this.audio.stop();
+            this.isPlaying = false;
+        }
+    }
+}
+
 //Visual elements for the visualizer: Cards (playing cards like poker :D)
 /*
     GoldenCard represents a single animated card on screen.
@@ -85,6 +119,12 @@ class VisualizerApp {
 
 // Test: Visualizer app class - working
 let app;
+app.audioManager = new AudioManager();
+document.getElementById('audioUpload').addEventListener('change', (e) => {
+  if (e.target.files.length > 0) {
+    app.audioManager.loadAudio(e.target.files[0]);
+  }
+});
 
 function setup() {
     createCanvas(windowWidth, windowHeight); //size of screen
