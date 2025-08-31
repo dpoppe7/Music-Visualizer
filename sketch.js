@@ -225,6 +225,24 @@ class SparkleBackground {
                     lifespan: 255
                 });
             }
+
+            if (numNewParticles > 0) {
+                console.log(`Created ${numNewParticles} particles. Total: ${this.particles.length}`);
+            }
+        }
+
+        
+
+        // this handles particle movement lyfecycle
+        // Update existing particles
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            this.particles[i].pos.add(this.particles[i].vel);
+            this.particles[i].lifespan -= 2;
+            
+            // Removes "fade" dead particles
+            if (this.particles[i].lifespan < 0) {
+                this.particles.splice(i, 1);
+            }
         }
     }
 
@@ -292,13 +310,10 @@ class VisualizerApp {
 
         // Then renders cards on top
         push();
-
         camera(0, 0, (height/2) / tan(PI/6), 0, 0, 0, 0, 1, 0);
-
         for (let card of this.cards) {
             card.render(this.audioManager);
         }
-
         pop();
     }
 
