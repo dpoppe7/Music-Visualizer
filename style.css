@@ -10,6 +10,7 @@ body {
     background: #000;
 }
 
+/* Control Panel */
 .control-panel {
     position: fixed;
     top: 20px;
@@ -45,9 +46,6 @@ body {
     border-left: none;
     border-radius: 0 12px 12px 0;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     transition: all 0.3s ease;
 }
 
@@ -74,58 +72,19 @@ body {
     background: rgba(255, 255, 255, 0.05);
 }
 
-button {
-    margin-top: 10px;
-    padding: 8px 16px;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    background: gold;
-    color: black;
-    font-weight: bold;
-}
-
-/* slider */
-input[type="range"] {
-    width: 20%;
-    margin-top: 8px;
-}
-
-
-
-
-
-.visual-panel {
-    margin-top: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.visual-panel label {
-    font-size: 14px;
-    margin-bottom: 4px;
-}
-
-.panel-header {
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.panel-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
-}
-
+/* input elements*/
 .control-group {
-    margin-bottom: 12px;
+    margin-bottom: 20px;
 }
 
-.button-group {
-    display: flex;
-    gap: 8px;
+.control-group:last-child {
+    margin-bottom: 0;
+}
+
+.section-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 24px 0;
 }
 
 .file-input {
@@ -133,47 +92,125 @@ input[type="range"] {
 }
 
 .upload-btn {
-    display: inline-block;
-    padding: 8px 16px;
-    background: rgba(44, 44, 46, 0.8);
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    cursor: pointer;
+    border-radius: 10px;
     color: white;
     text-align: center;
-    width: 100%;
+    cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .upload-btn:hover {
-    background: rgba(99, 99, 102, 0.8);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
 }
 
 .control-btn {
-    margin-top: 10px;
-    padding: 8px 16px;
-    cursor: pointer;
+    flex: 1;
+    padding: 10px 16px;
     border: none;
     border-radius: 8px;
-    font-weight: bold;
-    display: inline-flex;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.3s ease;
 }
 
 .control-btn.primary {
-    background: gold;
-    color: black;
+    background: rgba(255, 214, 10, 0.9);
+    color: #000;
 }
 
 .control-btn.secondary {
-    background: rgba(99, 99, 102, 0.6);
+    background: rgba(255, 255, 255, 0.1);
     color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .control-btn:hover {
-    opacity: 0.8;
     transform: translateY(-1px);
+}
+
+.control-btn.primary:hover {
+    background: rgba(255, 214, 10, 1);
+}
+
+.control-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* sliders */
+.slider-group {
+    margin-bottom: 16px;
+}
+
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.slider-value {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    min-width: 32px;
+    text-align: center;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 214, 10, 0.9);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: rgba(255, 214, 10, 1);
+    transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 214, 10, 0.9);
+    cursor: pointer;
+    border: none;
 }
 
 /* drop zone */

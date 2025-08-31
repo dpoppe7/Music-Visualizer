@@ -359,6 +359,7 @@ class VisualizerApp {
     }
 
     setupEventListeners() {
+        const controlPanel = document.getElementById('controlPanel');
         const fileInput = document.getElementById('audioUpload');   // file
         const playBtn = document.getElementById('playPause');   // play
         const stopBtn = document.getElementById('stop');    // stop
@@ -366,6 +367,16 @@ class VisualizerApp {
         const cardLabel = document.getElementById('cardCountLabel');    
         const animSpeedSlider = document.getElementById('animSpeed');   // animation
         const animSpeedValue = document.getElementById('animSpeedValue');
+
+        controlPanel.addEventListener('click', function(e) {
+            const rect = controlPanel.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            
+            if ((clickX > rect.width && clickX <= rect.width + 32) || controlPanel.classList.contains('collapsed')) {
+                controlPanel.classList.toggle('collapsed');
+                e.stopPropagation();
+            }
+        });
 
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
