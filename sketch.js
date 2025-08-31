@@ -23,6 +23,7 @@ class AudioManager{
         if (this.audio) this.audio.stop();
             this.audio = loadSound(file, () => {
                 this.fft.setInput(this.audio); // Set the input source for the FFT analysis. If no source is provided, FFT will analyze all sound in the sketch.
+                this.amp.setInput(this.audio);
                 this.isLoaded = true;
                 console.log('Audio loaded');
                 callback && callback();
@@ -99,7 +100,7 @@ class GoldenCard {
         this.rotation = createVector(0, 0, random(TWO_PI)); // 3d rotation
         this.rotationSpeed = createVector(random(-0.02, 0.02), random(-0.02, 0.02), random(-0.01, 0.01));//
 
-        this.baseSize = random(40, 80); // size of card
+        this.baseSize = random(20, 60); // size of card
         this.currentSize = this.baseSize;
 
         this.suit = random(['♠', '♥', '♦', '♣']); // random suit symbol
@@ -121,7 +122,8 @@ class GoldenCard {
     // added: reacts to audio volume
     update(audioLevel = 0, bassEnergy = 0, animSpeed = 1) {
         // Increase velocity slightly based on audio level
-        this.pos.add(this.vel.copy().mult((1 + audioLevel * 5) * animSpeed));
+        const movementMultiplier = (1 + audioLevel * 3) * animSpeed;
+        this.pos.add(this.vel.copy().mult(movementMultiplier));
 
         // rotate faster with volume
         this.rotation.x += (this.rotationSpeed.x + audioLevel * 0.05) * animSpeed;
@@ -130,7 +132,7 @@ class GoldenCard {
         
         // bass-reactive scaling
         const bassReaction = map(bassEnergy, 0, 255, 1, 2);
-        this.currentSize = this.baseSize * (1 + audioLevel * 1.5) * bassReaction; // scale size with volume
+        this.currentSize = this.baseSize * (1 + audioLevel * 0.8) * bassReaction; // scale size with volume
         this.wrapScreen();
     }
 
@@ -200,83 +202,17 @@ class GoldenCard {
     }
 }
 
-// particle system
-// class SmokeParticle {
-//     constructor() {
-//         this.reset();
-//         this.age = random(this.lifetime * 0.5);
-//     }
-    
-//     reset() {
-//         this.pos = createVector(random(width), height + 50);
-//         this.vel = createVector(random(-0.5, 0.5), random(-2, -0.5));
-//         this.size = random(30, 80);
-//         this.maxSize = this.size * random(1.5, 2.5);
-//         this.lifetime = random(200, 400);
-//         this.age = 0;
-//         this.noiseOffset = random(1000);
-//     }
-    
-//     update(audioManager, animSpeed = 1) {
-//         // Organic movement with noise
-//         const noiseForce = createVector(
-//             noise(this.pos.x * 0.01, millis() * 0.0005 + this.noiseOffset) - 0.5,
-//             noise(this.pos.y * 0.01, millis() * 0.0005 + this.noiseOffset + 1000) - 0.5
-//         );
-        
-//         noiseForce.mult(0.2);
-//         this.vel.add(noiseForce);
-//         this.vel.mult(0.99);
-        
-//         this.pos.add(p5.Vector.mult(this.vel, animSpeed));
-//         this.age += animSpeed;
-        
-//         // Size evolution
-//         this.size = lerp(this.size, this.maxSize, 0.01);
-        
-//         // Reset if too old
-//         if (this.age > this.lifetime) {
-//             this.reset();
-//         }
-//     }
-    
-//     render() {
-//         push();
-//         translate(this.pos.x, this.pos.y);
-        
-//         const ageRatio = this.age / this.lifetime;
-//         const alpha = map(ageRatio, 0, 1, 60, 0);
-        
-//         fill(200, 220, 255, alpha);
-//         noStroke();
-//         ellipse(0, 0, this.size);
-        
-//         pop();
-//     }
-// }
-
-
 // Visualizer Class: manages all cards and animation settings
 class VisualizerApp {
     constructor(audioMgr) {
         this.cards = [];
         this.audioManager = audioMgr; // link to audio manager
-        // this.smokeParticles = []; // particles system "floating spheres"
-        // this.particleTrails = []; // particles systme trail :D
         this.settings = { 
             cardCount: 20,
             bgColor: '#000000',
             animSpeed: 1.0,
         };
     }
-
-    // initialize smoke particle system
-    // initializeSmoke() {
-    //     this.smokeParticles = [];
-    //     for (let i = 0; i < 30; i++) {
-    //         this.smokeParticles.push(new SmokeParticle());
-    //     }
-    // }
 
     // Initialize cards array with random positions
     initialize() {
@@ -288,41 +224,6 @@ class VisualizerApp {
         //this.initializeSmoke(); // particle system intializer call
     }
 
-    // Not using particle trails yet
-    // updateTrails() {
-    //     if (this.settings.particleTrails) {
-    //         // Add trail points at mouse position
-    //         this.particleTrails.push({
-    //             pos: createVector(mouseX, mouseY), // reacts to mouse movement
-    //             life: 60 // how many frames the trail point will last before it disappears
-    //         });
-            
-    //         // Update and remove old trails
-    //         for (let i = this.particleTrails.length - 1; i >= 0; i--) {
-    //             this.particleTrails[i].life--;
-    //             if (this.particleTrails[i].life <= 0) {
-    //                 this.particleTrails.splice(i, 1);
-    //             }
-    //         }
-    //     }
-    // }
-
-    // renderTrails() {
-    //     if (this.settings.particleTrails && this.particleTrails.length > 1) {
-    //         stroke(255, 215, 0, 100);
-    //         strokeWeight(2);
-    //         noFill();
-            
-    //         // creating partile shape
-    //         beginShape();
-    //         for (let trail of this.particleTrails) {
-    //             const alpha = map(trail.life, 0, 60, 0, 100);
-    //             vertex(trail.pos.x, trail.pos.y);
-    //         }
-    //         endShape();
-    //     }
-    // }
-
 
     // Update all cards positions 
     update() {
@@ -333,43 +234,21 @@ class VisualizerApp {
         for (let card of this.cards) {
             card.update(level, bassEnergy, this.settings.animSpeed);
         }
-
-        // Updates smoke particles
-        // for (let particle of this.smokeParticles) {
-        //     particle.update(this.audioManager, this.settings.animSpeed);
-        // }
-
-        // updates trail particles
-        // this.updateTrails();
     }
 
     // Draws all cards 
     render() {
         background(this.settings.bgColor);
 
-        // Might add this later: Bass-reactive background pulse
-        // if (this.audioManager.isLoaded && this.audioManager.isPlaying) {
-        //     const bassEnergy = this.audioManager.getBassEnergy();
-        //     const bassPulse = map(bassEnergy, 0, 255, 0, 30);
-        //     fill(255, 215, 0, bassPulse);
-        //     noStroke();
-        //     ellipse(width/2, height/2, width * 1.5, height * 1.5);
-        // }
-
-        // Renders smoke particles first (background)
-        // for (let particle of this.smokeParticles) {
-        //     particle.render();
-        // }
-
-        // Rendera particle trails
-        // this.renderTrails();
-
         // Then renders cards on top
         push();
+
         camera(0, 0, (height/2) / tan(PI/6), 0, 0, 0, 0, 1, 0);
+
         for (let card of this.cards) {
             card.render(this.audioManager);
         }
+
         pop();
     }
 
