@@ -204,9 +204,39 @@ class GoldenCard {
 }
 
 class SparkleBackground {
-    // constructor
-    // update()
-    //render()
+    constructor(audioManager) {
+        this.audioManager = audioManager;
+        this.particles = [];
+        this.maxParticles = 1000; // max particle count (page's performance improves with less particles)
+        this.colorHue = 0; // Starting hue for the color transition
+    }
+
+    update() {
+        const audioLevel = this.audioManager.getLevel();
+        
+        // Creates particles only when there's audio
+        if (audioLevel > 0.05) {
+            let numNewParticles = floor(map(audioLevel, 0, 1, 1, 5));
+            
+            for (let i = 0; i < numNewParticles; i++) {
+                this.particles.push({
+                    pos: createVector(width / 2, height / 2),
+                    vel: createVector(random(-2, 2), random(-2, 2)),
+                    lifespan: 255
+                });
+            }
+        }
+    }
+
+    render() {
+        backgroundGraphics.background(0, 0, 0, 50);
+        
+        for (let p of this.particles) {
+            backgroundGraphics.stroke(255, 0, 0, p.lifespan);
+            backgroundGraphics.strokeWeight(2);
+            backgroundGraphics.point(p.pos.x, p.pos.y);
+        }
+    }
 }
 
 // Visualizer Class: manages all cards and animation settings
@@ -214,6 +244,7 @@ class VisualizerApp {
     constructor(audioMgr) {
         this.cards = [];
         this.audioManager = audioMgr; // link to audio manager
+        this.sparkleBackground = sparkleBackground;
         this.settings = { 
             cardCount: 20,
             bgColor: '#000000',
@@ -235,6 +266,7 @@ class VisualizerApp {
     // Update all cards positions 
     update() {
         this.audioManager.update();
+        this.sparkleBackground.update();
         const level = this.audioManager.getLevel(); // get audio amplitude
         const bassEnergy = this.audioManager.getBassEnergy();
         
@@ -246,6 +278,17 @@ class VisualizerApp {
     // Draws all cards 
     render() {
         background(this.settings.bgColor);
+
+
+        this.sparkleBackground.render(); 
+        // renders background graphic main canvas
+        push();
+        translate(-width/2, -height/2, -200); // Position of the background plane
+        texture(backgroundGraphics);
+        noStroke();
+        plane(width, height);
+        pop();
+
 
         // Then renders cards on top
         push();
@@ -392,7 +435,7 @@ function setup() {
     sparkleBackground = new SparkleBackground(audioManager); // Instance of SparkleBackground Class
 
     // Initialize visualizer cards
-    app = new VisualizerApp(audioManager);
+    app = new VisualizerApp(audioManager, sparkleBackground);
     app.initialize();
     app.setupEventListeners();
 }
