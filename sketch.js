@@ -13,10 +13,13 @@ class SparkleBackground {
     update() {
         const audioLevel = this.audioManager.getLevel();
         const bassEnergy = this.audioManager.getBassEnergy();
+
+        //transitions the hue from red (0) towards gold/yellow (50)
+        this.colorHue = (this.colorHue + 0.1) % 50;
         
         // Creates particles only when there's audio
         if (audioLevel > 0.05) {
-            let numNewParticles = floor(map(audioLevel, 0, 1, 1, 5));
+            let numNewParticles = floor(map(audioLevel, 0, 1, 1, 10));
             numNewParticles += floor(map(bassEnergy, 0, 255, 0, 20));
 
             if (this.particles.length + numNewParticles > this.maxParticles) {
@@ -24,22 +27,19 @@ class SparkleBackground {
             }
             
             for (let i = 0; i < numNewParticles; i++) {
-                // let angle = random(TWO_PI);
-                // let speed = map(audioLevel, 0, 1, 0.5, 5) + map(bassEnergy, 0, 255, 0, 3);
-                // let vel = p5.Vector.fromAngle(angle, speed);
+                // Passing the current hue to the new particle
+                let angle = random(TWO_PI);
+                let speed = map(audioLevel, 0, 1, 0.5, 5) + map(bassEnergy, 0, 255, 0, 3);
+                let vel = p5.Vector.fromAngle(angle, speed);
                 this.particles.push({
                     pos: createVector(width / 2, height / 2),
-                    vel: createVector(random(-2, 2), random(-2, 2)),
+                    vel: vel,
                     lifespan: 255,
-                    size: random(0.5, 2.5)
+                    size: random(0.5, 2.5),
+                    hue: this.colorHue
                 });
             }
-
-            if (numNewParticles > 0) {
-                console.log(`Created ${numNewParticles} particles. Total: ${this.particles.length}`);
-            }
         }
-
         
 
         // this handles particle movement lyfecycle
@@ -63,13 +63,13 @@ class SparkleBackground {
         backgroundGraphics.beginShape(POINTS);
         for (let p of this.particles) {
             let alpha = map(p.lifespan, 0, 255, 0, 255); //lifespan to a fading alpha value
-            backgroundGraphics.stroke(255, 255, 255, alpha); // Draw the main sparkle in transparent white
+            backgroundGraphics.stroke(p.hue, 227, 160, alpha); // Draw the main sparkle in transparent white
             backgroundGraphics.strokeWeight(p.size);
             
             // bright flash effect for bass hits
             let bassEnergy = this.audioManager.getBassEnergy();
             if (bassEnergy > 150) {
-                backgroundGraphics.stroke(255, 255, 255, alpha); // A brighter white flash for bass hits
+                backgroundGraphics.stroke(p.hue, 255, 255, alpha); // A brighter white flash for bass hits
                 backgroundGraphics.strokeWeight(p.size + 2);
             }
             backgroundGraphics.vertex(p.pos.x, p.pos.y);
@@ -306,7 +306,7 @@ class VisualizerApp {
     // Update all cards positions 
     update() {
         this.audioManager.update();
-        this.sparkleBackground.update();
+        this.sparkleBackground.update(); // 2d background particles
         const level = this.audioManager.getLevel(); // get audio amplitude
         const bassEnergy = this.audioManager.getBassEnergy();
         
@@ -317,22 +317,24 @@ class VisualizerApp {
 
     // Draws all cards 
     render() {
-        background(this.settings.bgColor);
+        background(this.settings.bgColor); // clears fro both2d and 3d
 
+        this.sparkleBackground.render(); //Renders the 2D background first
 
-        this.sparkleBackground.render(); 
-        // renders background graphic main canvas
-        push();
-        translate(-width/2, -height/2, -200); // Position of the background plane
-        texture(backgroundGraphics);
-        noStroke();
-        plane(width, height);
-        pop();
-
-
-        // Then renders cards on top
+        // setting up 3d scene for the cards
         push();
         camera(0, 0, (height/2) / tan(PI/6), 0, 0, 0, 0, 1, 0);
+
+        // renders background graphic main canvas
+        push();
+        translate(0, 0, -500); // Position of the background plane
+        noStroke();
+        texture(backgroundGraphics);
+        plane(width, height);
+        // plane(width * 1.5, height * 1.5); // increased plane to cover view
+        pop();
+
+        // Then renders cards on top
         for (let card of this.cards) {
             card.render(this.audioManager);
         }
@@ -484,4 +486,5 @@ function draw() {
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+    backgroundGraphics.resizeCanvas(windowWidth, windowHeight);
 }
