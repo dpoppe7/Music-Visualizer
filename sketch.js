@@ -105,11 +105,22 @@ class AudioManager{
                 console.log('Audio loaded');
                 callback && callback();
         });
+
+        this.audio.onended(() => {
+            this.audio.stop();
+            this.isPlaying = false;
+            app.updatePlayButton(); // when sound ends, updates button back to 'play'
+        });
     }
 
     // play if loaded
     play() {
         if (this.isLoaded && !this.isPlaying) {
+            //checking if song has ended to restart it
+            if (this.audio.duration() - this.audio.currentTime() < 0.1) {
+                this.audio.jump(0);
+            }
+
             this.audio.play();
             this.isPlaying = true;
         }
@@ -350,10 +361,10 @@ class VisualizerApp {
         const playText = document.getElementById('playText');
         
         if (this.audioManager.isPlaying) {
-            playIcon.textContent = '⏸️';
+            playIcon.textContent = '⏸';
             playText.textContent = 'Pause';
         } else {
-            playIcon.textContent = '▶️';
+            playIcon.textContent = '▶';
             playText.textContent = 'Play';
         }
     }
