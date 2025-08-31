@@ -1,6 +1,7 @@
 // Asset variables
 let cardFrontTexture;
 let cardBackTexture;
+let backgroundGraphics;
 
 // Audio manager class: audio control
 class AudioManager{
@@ -202,6 +203,12 @@ class GoldenCard {
     }
 }
 
+class SparkleBackground {
+    // constructor
+    // update()
+    //render()
+}
+
 // Visualizer Class: manages all cards and animation settings
 class VisualizerApp {
     constructor(audioMgr) {
@@ -377,9 +384,12 @@ function preload() {
 }
 
 function setup() {
-    // createCanvas(windowWidth, windowHeight); //size of screen
     createCanvas(windowWidth, windowHeight, WEBGL); // webgl canvas
+    // background graphics, it's an offscreen background buffer, doesnt affect the 3d canvas.
+    backgroundGraphics = createGraphics(windowWidth, windowHeight); // background sparkle
+
     audioManager = new AudioManager();
+    sparkleBackground = new SparkleBackground(audioManager); // Instance of SparkleBackground Class
 
     // Initialize visualizer cards
     app = new VisualizerApp(audioManager);
