@@ -1,11 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    background: #000;
+}
+
 .control-panel {
     position: fixed;
     top: 20px;
     left: 20px;
-    background: rgba(28, 28, 30, 0.85);
-    padding: 16px;
-    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 28px;
     color: white;
+    width: 280px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform-origin: left center;
+    z-index: 1000;
 }
 
 button {
