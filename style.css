@@ -265,9 +265,16 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .drop-icon {
-    font-size: 48px;
     margin-bottom: 16px;
     opacity: 0.8;
+}
+
+.drop-icon img {
+    width: 64px; 
+    height: 64px; 
+    border-radius: 10%; 
+    object-fit: cover;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .drop-content h3 {
