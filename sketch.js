@@ -95,87 +95,30 @@ class GoldenCard {
     // x, y - position
     constructor(x, y) {
         this.pos = createVector(x, y, random(-50, 50)); // position vector, z for 3d
-        // this.vel = createVector(random(-1, 1), random(-1, 1)); // velocity: random movement
         this.vel = createVector(random(-1, 1), random(-1, 1));
-        // this.vel = p5.Vector.random3D().mult(random(0.5, 1.5)); // velocitry 3d test
         this.rotation = createVector(0, 0, random(TWO_PI)); // 3d rotation
         this.rotationSpeed = createVector(random(-0.02, 0.02), random(-0.02, 0.02), random(-0.01, 0.01));//
 
-        // this.angle = random(TWO_PI); // rotation angle
         this.baseSize = random(40, 80); // size of card
         this.currentSize = this.baseSize;
 
         this.suit = random(['♠', '♥', '♦', '♣']); // random suit symbol
         this.suitColor = this.suit === '♥' || this.suit === '♦' ? color(220, 20, 60) : color(0); // heart or diamond are red, otherwise black 
-
-        // (improved visual effects on cards) 
-        // properties: wave rings on cards
-        // this.wavePhase = random(TWO_PI);
-        // this.waveSpeed = random(0.02, 0.05);
-        // this.numRings = 8; // number of wwave rings
     }
 
-    // renderWavesOnCard(w, h) {
-    //     push();
-
-    //     // Creates the radial wave pattern
-    //     for (let ring = 0; ring < this.numRings; ring++) { // This loop iterates to create multiple rings
-    //         const ringRadius = map(ring, 0, this.numRings - 1, w * 0.4, w * 0.05);
-    //         const waveHeight = map(ring, 0, this.numRings - 1, 8, 3);
-    //         const opacity = map(ring, 0, this.numRings - 1, 80, 120);
-            
-    //         stroke(255, 255, 255, opacity);
-    //         strokeWeight(0.5);
-    //         noFill();
-            
-    //         beginShape();
-    //         for (let angle = 0; angle < TWO_PI + 0.1; angle += 0.1) {
-    //             const waveOffset = sin(this.wavePhase + angle * 6 + ring * 0.5) * waveHeight;
-    //             const r = ringRadius + waveOffset;
-    //             const x = cos(angle) * r;
-    //             const y = sin(angle) * r;
-    //             vertex(x, y);
-    //         }
-    //         endShape();
-    //     }
-        
-    //     pop();
-    // }
-
-    // this function adds radial lines from center of the card.
-    // renderRadialLinesOnCard(w, h) {
-    //     stroke(255, 255, 255, 60);
-    //     strokeWeight(0.3);
-        
-    //     const numLines = 24; // Number of lines radiating from center
-    //     for (let i = 0; i < numLines; i++) {
-    //         const angle = map(i, 0, numLines, 0, TWO_PI);
-    //         const lineLength = w * 0.45;
-            
-    //         // Add subtle shimmer to lines
-    //         const shimmer = sin(this.wavePhase + i * 0.3) * 3;
-    //         const x1 = cos(angle) * (lineLength + shimmer);
-    //         const y1 = sin(angle) * (lineLength + shimmer);
-            
-    //         line(0, 0, x1, y1);
-    //     }
-    // }
-
+    
     // function updates card position and angle
     // added: reacts to audio volume
     update(audioLevel = 0, bassEnergy = 0, animSpeed = 1) {
         // Increase velocity slightly based on audio level
         this.pos.add(this.vel.copy().mult((1 + audioLevel * 5) * animSpeed));
 
-        // this.angle += (0.01 + audioLevel * 0.05) * animSpeed; // rotate faster with volume
+        // rotate faster with volume
         this.rotation.x += (this.rotationSpeed.x + audioLevel * 0.05) * animSpeed;
         this.rotation.y += (this.rotationSpeed.y + audioLevel * 0.08) * animSpeed;
         this.rotation.z += (this.rotationSpeed.z + audioLevel * 0.03) * animSpeed;
         
-        // // Animating the wave pattern
-        // this.wavePhase += this.waveSpeed * animSpeed;
-
-        // also assing bass-reactive scaling
+        // bass-reactive scaling
         const bassReaction = map(bassEnergy, 0, 255, 1, 2);
         this.currentSize = this.baseSize * (1 + audioLevel * 1.5) * bassReaction; // scale size with volume
         this.wrapScreen();
@@ -208,7 +151,7 @@ class GoldenCard {
         if (cardFrontTexture && cardFrontTexture.width > 0) {
             texture(cardFrontTexture);
         } else {
-            // asset not loaded :c
+            // when asset not loaded, card white :c
             fill(255, 255, 255); // white card
         }
         noStroke();
@@ -241,36 +184,6 @@ class GoldenCard {
         pop();
         
         pop(); // end
-        
-        // Shadow
-        // push();
-        // translate(3, 3);
-        // fill(0, 0, 0, 100);
-        // noStroke();
-        // rect(-w/2, -h/2, w, h, 10);
-        // pop();
-        
-        // Inner border
-        // fill(255, 235, 59);
-        // noStroke();
-        // const innerW = w * 0.9;
-        // const innerH = h * 0.9;
-        // rect(-innerW/2, -innerH/2, innerW, innerH, 8);
-
-        // Metallic silver/gold card base
-        // fill(220, 220, 230); // yellow
-        // fill(0, 0, 20); // blue
-        // stroke(200, 200, 210);
-        // strokeWeight(5);
-        // rect(-w/2, -h/2, w, h, 8);
-
-        // // Render the concentric wave pattern
-        // this.renderWavesOnCard(w, h);
-        
-        // // Render radial lines
-        // this.renderRadialLinesOnCard(w, h);
-        
-        
     }
 }
 
@@ -485,7 +398,6 @@ class VisualizerApp {
         playBtn.addEventListener('click', () => {
             this.audioManager.toggle();
             this.updatePlayButton();
-            // console.log('Audio playing:', this.audioManager.isPlaying);
         });
 
         stopBtn.addEventListener('click', () => {
@@ -557,9 +469,9 @@ class VisualizerApp {
     }
 }
 
-// Test: Visualizer app class - working
 let app;
 let audioManager;
+
 // preload will load the assets :3
 function preload() {
     try {
