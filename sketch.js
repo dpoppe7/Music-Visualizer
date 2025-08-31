@@ -103,9 +103,19 @@ class GoldenCard {
         this.currentSize = this.baseSize;
 
         this.suit = random(['♠', '♥', '♦', '♣']); // random suit symbol
-        this.suitColor = this.suit === '♥' || this.suit === '♦' ? color(220, 20, 60) : color(0); // heart or diamond are red, otherwise black 
+        this.suitColor = this.suit === '♥' || this.suit === '♦' ? color(160, 32, 17) : color(0); // heart or diamond are red, otherwise black 
+        // symbols for the cards
+        this.symbolBuffer = createGraphics(100, 140);
+        this.drawSymbol();
     }
 
+    drawSymbol() {
+        this.symbolBuffer.clear();
+        this.symbolBuffer.fill(this.suitColor);
+        this.symbolBuffer.textAlign(CENTER, CENTER);
+        this.symbolBuffer.textSize(this.symbolBuffer.width * 0.4);
+        this.symbolBuffer.text(this.suit, this.symbolBuffer.width / 2, this.symbolBuffer.height / 2);
+    }
     
     // function updates card position and angle
     // added: reacts to audio volume
@@ -142,12 +152,14 @@ class GoldenCard {
         rotateZ(this.rotation.z);
 
         const w = this.currentSize;
-        const h = w * 1.4;
+        const h = w * 1.4;        
+        const cardDepth = 0.5; // defines the thickness of the cards
 
         // Here drawing each card :D
+
         // FRONT face asset(image) + symbol
         push();
-        translate(0, 0, 1);
+        translate(0, 0, cardDepth / 2);
         if (cardFrontTexture && cardFrontTexture.width > 0) {
             texture(cardFrontTexture);
         } else {
@@ -155,24 +167,24 @@ class GoldenCard {
             fill(255, 255, 255); // white card
         }
         noStroke();
-        plane(w, h);
+        box(w, h, cardDepth);
 
-        // adding the symbol on top of the asset :D
-         if (cardFrontTexture && cardFrontTexture.width > 0) { // if loaded
+        // adding the symbol on top of the asset, card front :D
+        if (cardFrontTexture && cardFrontTexture.width > 0) { // if loaded
             // Suit symbol
             push(); 
-            translate(0, 0, 1.1); // sligthly above texture
-            fill(this.suitColor);
-            textAlign(CENTER, CENTER);
-            textSize(w * 0.4);
-            text(this.suit, 0, 0);
+            translate(0, 0, cardDepth / 2 + 0.01); // positions just in front of the card face
+            noStroke();
+            texture(this.symbolBuffer);
+            plane(w, h);
             pop(); 
         } 
+
         pop();
 
         // BACK back asset(image)
         push();
-        translate(0, 0, -1);
+        translate(0, 0, -cardDepth/ 2);
         rotateY(PI);    // flips the back face
         if (cardBackTexture && cardBackTexture.width > 0) {
             texture(cardBackTexture);
@@ -180,8 +192,9 @@ class GoldenCard {
             fill(255, 0, 0);
         }
         noStroke();
-        plane(w, h);
+        box(w, h, cardDepth);
         pop();
+
         
         pop(); // end
     }
@@ -475,8 +488,8 @@ let audioManager;
 // preload will load the assets :3
 function preload() {
     try {
-        cardFrontTexture = loadImage('assets/card/card-front.jpg');
-        cardBackTexture = loadImage('assets/card/card-back.jpg');
+        cardBackTexture = loadImage('assets/card/card-back.png');
+        cardFrontTexture = loadImage('assets/card/card-front.png');
     } catch(e) {
         console.log('Could not load card textures:', e);
         cardFrontTexture = null;
