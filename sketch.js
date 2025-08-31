@@ -86,26 +86,26 @@ class AudioManager{
         return this.fft.getEnergy("treble");
     }
 }
-//Visual elements for the visualizer: Cards (playing cards like poker :D)
+//Visual elements for the visualizer: Cards (playing cards - like poker :D)
 /*
     GoldenCard represents a single animated card on screen.
-    Handles position, velocity, angle, size, suit, and color.
+    Handles position, velocity, angle, size, suit, color, etc..
 */
 class GoldenCard {
     // x, y - position
-    constructor(x, y, z) {
-        this.pos = createVector(x, y, z); // position vector, z for 3d
+    constructor(x, y) {
+        this.pos = createVector(x, y, random(-50, 50)); // position vector, z for 3d
         // this.vel = createVector(random(-1, 1), random(-1, 1)); // velocity: random movement
-        this.vel = p5.Vector.random3D().mult(random(0.5, 1.5));
+        this.vel = createVector(random(-1, 1), random(-1, 1));
         // this.vel = p5.Vector.random3D().mult(random(0.5, 1.5)); // velocitry 3d test
-        this.rotation = p5.Vector.random3D().mult(random(0.01, 0.05)); // 3d rotation
-        this.rotationSpeed = p5.Vector.random3D().mult(random(0.001, 0.005)); //
+        this.rotation = createVector(0, 0, random(TWO_PI)); // 3d rotation
+        this.rotationSpeed = createVector(random(-0.02, 0.02), random(-0.02, 0.02), random(-0.01, 0.01));//
 
         // this.angle = random(TWO_PI); // rotation angle
-
-        this.suit = random(['♠', '♥', '♦', '♣']); // random suit symbol
         this.baseSize = random(40, 80); // size of card
         this.currentSize = this.baseSize;
+
+        this.suit = random(['♠', '♥', '♦', '♣']); // random suit symbol
         this.suitColor = this.suit === '♥' || this.suit === '♦' ? color(220, 20, 60) : color(0); // heart or diamond are red, otherwise black 
 
         // (improved visual effects on cards) 
@@ -168,7 +168,9 @@ class GoldenCard {
         this.pos.add(this.vel.copy().mult((1 + audioLevel * 5) * animSpeed));
 
         // this.angle += (0.01 + audioLevel * 0.05) * animSpeed; // rotate faster with volume
-        this.rotation.add(p5.Vector.mult(this.rotation, (1 + audioLevel * 2) * animSpeed));
+        this.rotation.x += (this.rotationSpeed.x + audioLevel * 0.05) * animSpeed;
+        this.rotation.y += (this.rotationSpeed.y + audioLevel * 0.08) * animSpeed;
+        this.rotation.z += (this.rotationSpeed.z + audioLevel * 0.03) * animSpeed;
         
         // // Animating the wave pattern
         // this.wavePhase += this.waveSpeed * animSpeed;
@@ -182,13 +184,10 @@ class GoldenCard {
     // card wrap around canvas edges (prevents the cards from disappearing from canvas)
     wrapScreen() {
         const margin = this.currentSize * 0.6;
-        if (this.pos.x < -margin) this.pos.x = width + margin;
-        if (this.pos.x > width + margin) this.pos.x = -margin;
-        if (this.pos.y < -margin) this.pos.y = height + margin;
-        if (this.pos.y > height + margin) this.pos.y = -margin;
-
-        if (this.pos.z < -100) this.pos.z = 100;
-        if (this.pos.z > 100) this.pos.z = -100;
+        if (this.pos.x < -width/2 - margin) this.pos.x = width/2 + margin;
+        if (this.pos.x > width/2 + margin) this.pos.x = -width/2 - margin;
+        if (this.pos.y < -height/2 - margin) this.pos.y = height/2 + margin;
+        if (this.pos.y > height/2 + margin) this.pos.y = -height/2 - margin;
     }
 
     render(audioManager) {
@@ -357,6 +356,7 @@ class VisualizerApp {
     initialize() {
         this.cards = [];
         for (let i = 0; i < this.settings.cardCount; i++) {
+            // this is WEBGL coordinate system
             this.cards.push(new GoldenCard(random(-width / 2, width / 2), random(-height / 2, height / 2), random(-100, 100)));
         }
         //this.initializeSmoke(); // particle system intializer call
@@ -439,9 +439,12 @@ class VisualizerApp {
         // this.renderTrails();
 
         // Then renders cards on top
+        push();
+        camera(0, 0, (height/2) / tan(PI/6), 0, 0, 0, 0, 1, 0);
         for (let card of this.cards) {
             card.render(this.audioManager);
         }
+        pop();
     }
 
     // dynamically update card count
