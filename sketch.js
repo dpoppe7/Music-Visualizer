@@ -1,4 +1,6 @@
 // Audio manager class: audio control
+// This version has the cards being displayed in 2d
+// note for myself: come back to this commit to see this 2d version. 
 class AudioManager{
     constructor() {
         this.audio = null;
