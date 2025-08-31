@@ -367,11 +367,12 @@ class VisualizerApp {
         const cardLabel = document.getElementById('cardCountLabel');    
         const animSpeedSlider = document.getElementById('animSpeed');   // animation
         const animSpeedValue = document.getElementById('animSpeedValue');
+        const fileNameDisplay = document.getElementById('fileNameDisplay')
 
-        controlPanel.addEventListener('click', function(e) {
+        controlPanel.addEventListener('click', (e) => {
             const rect = controlPanel.getBoundingClientRect();
             const clickX = e.clientX - rect.left;
-            
+
             if ((clickX > rect.width && clickX <= rect.width + 32) || controlPanel.classList.contains('collapsed')) {
                 controlPanel.classList.toggle('collapsed');
                 e.stopPropagation();
@@ -380,7 +381,9 @@ class VisualizerApp {
 
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
-                this.loadAudioFile(e.target.files[0]);
+                const file = e.target.files[0];
+                fileNameDisplay.textContent = `Loading: ${file.name}`;
+                this.loadAudioFile(file);
             }
         });
 
@@ -412,6 +415,8 @@ class VisualizerApp {
     // drag-and-drop event listeners for the drop zone
     setupDropZone() {
         const dropZone = document.getElementById('dropZone');
+        const dropZoneH3 = dropZone.querySelector('h3');
+        const dropZoneDefaultText = dropZoneH3.textContent;
 
         dropZone.addEventListener('click', () => {
             document.getElementById('audioUpload').click();  // Clicking the drop zone opens the file browser
@@ -420,16 +425,23 @@ class VisualizerApp {
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.classList.add('drag-over'); // Add hover styles effect - visual feedback for dragging
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                dropZoneH3.textContent = `Drop to play "${files[0].name}"`;
+            }
         });
 
         dropZone.addEventListener('dragleave', () => {
             dropZone.classList.remove('drag-over'); // Add hover styles effect - visual feedback for dragging
+            dropZoneH3.textContent = dropZoneDefaultText;
         });
 
         // Handlea the dropped file
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('drag-over');
+            dropZoneH3.textContent = dropZoneDefaultText;
 
             const files = e.dataTransfer.files;
             if (files.length > 0 && files[0].type.includes('audio')) {
@@ -440,10 +452,14 @@ class VisualizerApp {
 
     loadAudioFile(file) {
         const loadingIndicator = document.getElementById('loadingIndicator');
+        const fileNameDisplay = document.getElementById('fileNameDisplay')
+
         loadingIndicator.classList.add('visible');
+        fileNameDisplay.textContent = `Loading: ${file.name}`;
 
         this.audioManager.loadAudio(file, () => {
             loadingIndicator.classList.remove('visible');
+            fileNameDisplay.textContent = file.name;
             console.log('Audio loaded successfully');
             this.hideDropZone();
         });

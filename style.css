@@ -94,7 +94,7 @@ body {
 .upload-btn {
     display: block;
     width: 100%;
-    padding: 12px 16px;
+    padding: 12px 16px, 12px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
@@ -109,6 +109,17 @@ body {
 .upload-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     transform: translateY(-1px);
+}
+
+.file-name-display {
+    display: block;
+    margin-top: 8px; /* space above file name */
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .button-group {
