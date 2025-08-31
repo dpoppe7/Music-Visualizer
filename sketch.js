@@ -70,7 +70,7 @@ class SparkleBackground {
             let bassEnergy = this.audioManager.getBassEnergy();
             if (bassEnergy > 150) {
                 backgroundGraphics.stroke(p.hue, 255, 255, alpha); // A brighter white flash for bass hits
-                backgroundGraphics.strokeWeight(p.size + 2);
+                backgroundGraphics.strokeWeight(p.size);
             }
             backgroundGraphics.vertex(p.pos.x, p.pos.y);
         }
@@ -287,7 +287,6 @@ class VisualizerApp {
         this.sparkleBackground = sparkleBackground;
         this.settings = { 
             cardCount: 20,
-            bgColor: '#000000',
             animSpeed: 1.0,
         };
     }
@@ -317,7 +316,7 @@ class VisualizerApp {
 
     // Draws all cards 
     render() {
-        background(this.settings.bgColor); // clears fro both2d and 3d
+        background(0); // bakground always black
 
         this.sparkleBackground.render(); //Renders the 2D background first
 
@@ -330,8 +329,7 @@ class VisualizerApp {
         translate(0, 0, -500); // Position of the background plane
         noStroke();
         texture(backgroundGraphics);
-        plane(width, height);
-        // plane(width * 1.5, height * 1.5); // increased plane to cover view
+        plane(width * 1.5, height * 1.5); // increased plane to cover view
         pop();
 
         // Then renders cards on top
@@ -366,7 +364,6 @@ class VisualizerApp {
         const stopBtn = document.getElementById('stop');    // stop
         const cardSlider = document.getElementById('cardCountSlider');  // slider nume of cards
         const cardLabel = document.getElementById('cardCountLabel');    
-        const bgColorInput = document.getElementById('bgColor');    // background color
         const animSpeedSlider = document.getElementById('animSpeed');   // animation
         const animSpeedValue = document.getElementById('animSpeedValue');
 
@@ -390,10 +387,6 @@ class VisualizerApp {
             const val = parseInt(e.target.value);
             cardLabel.textContent = val;
             this.setCardCount(val);
-        });
-
-        bgColorInput.addEventListener('input', (e) => {
-            this.settings.bgColor = e.target.value;
         });
 
         animSpeedSlider.addEventListener('input', (e) => {
