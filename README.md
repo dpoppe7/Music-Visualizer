@@ -1,5 +1,7 @@
 # 🎵 Music-Visualizer
 > A responsive and interactive music visualizer that reacts to music, built with p5.js and p5.sound.
+![My App Screenshot 1](images/display2.png)
+![My App Screenshot 2](images/display1.png)
 
 #### Live Demo: https://music-visualizer-dpoppe7.netlify.app
 
