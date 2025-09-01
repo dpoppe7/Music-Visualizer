@@ -1,5 +1,5 @@
 # 🎵 Music-Visualizer
-> A responsive and interactive music visualizer that reacts to music, built with p5.js and p5.sound.
+> A responsive and interactive music visualizer that reacts to music, built with p5.js and WebGL.
 ![My App Screenshot 1](images/display2.png)
 ![My App Screenshot 2](images/display1.png)
 
