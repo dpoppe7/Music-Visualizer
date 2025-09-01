@@ -14,8 +14,9 @@ class SparkleBackground {
         const audioLevel = this.audioManager.getLevel();
         const bassEnergy = this.audioManager.getBassEnergy();
 
-        //transitions the hue from red (0) towards gold/yellow (50)
-        this.colorHue = (this.colorHue + 0.1) % 50;
+        //transitions the hue 
+        // this.colorHue = (this.colorHue + 0.1) % 50;
+        this.colorHue = (this.colorHue + 0.1) % 180 + 240;
         
         // Creates particles only when there's audio
         if (audioLevel > 0.05) {
@@ -63,7 +64,8 @@ class SparkleBackground {
         backgroundGraphics.beginShape(POINTS);
         for (let p of this.particles) {
             let alpha = map(p.lifespan, 0, 255, 0, 255); //lifespan to a fading alpha value
-            backgroundGraphics.stroke(p.hue, 227, 160, alpha); // Draw the main sparkle in transparent white
+            backgroundGraphics.stroke(p.hue, 250, 190, alpha);
+            // backgroundGraphics.stroke(p.hue, 227, 160, alpha); // Draw the main sparkle in transparent white
             backgroundGraphics.strokeWeight(p.size);
             
             // bright flash effect for bass hits
