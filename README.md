@@ -8,7 +8,7 @@
 ## Inspiration + Process
 This music visualizer is inspired by a deck of cards I bought in Las Vegas. The 2D background is a particle system that creates a fading sparkle effect. It's a separate layer that is rendered first. On top of that, there is the 3D space using WebGL to render the cards.
 
-The cards themselves are not complex models. I simply scanned one of my card's front and back and applied those images as textures to thin boxes using WebGL. This approach makes them look realistic as they move, rotate, and react to the music. The 2D sparkle background is rendered onto a large plane positioned behind the cards in 3D space, creating depth while keeping the cards "floating". This made them look realistic as they move and spin. (I was quite excited seeing the cards on the screen :D)
+The cards themselves are not complex models. I simply scanned one of my card's front and back and applied those images as textures to thin boxes using WebGL. This approach makes them look realistic as they move, rotate, and react to the music. The 2D sparkle background is rendered onto a large plane positioned behind the cards in 3D space, creating depth while keeping the cards "floating". This made them look realistic as they move and spin. (I was quite excited seeing the cards on the screen :D) 
 
 ## Technical Features
 
